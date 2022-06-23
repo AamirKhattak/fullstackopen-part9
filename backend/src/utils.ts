@@ -100,16 +100,18 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 }
 
-type PatientFields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown};
+type PatientFields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown, entries: any};
 
-export const toNewPatient = ( {name, dateOfBirth, ssn, gender, occupation}: PatientFields): NewPatient => {
+export const toNewPatient = ( {name, dateOfBirth, ssn, gender, occupation, entries}: PatientFields): NewPatient => { 
+  let newEntries = entries ? entries : new Array();
+  
   const newPatient: NewPatient = {
     name: parseName(name),
     dateOfBirth: parseDate(dateOfBirth),
     ssn: parseSSN(ssn),
     gender: parseGender(gender),
     occupation: parseOccupation(occupation),
-    entries: new Array()
+    entries: newEntries
   };
   return newPatient;
 }
