@@ -7,21 +7,32 @@ const patientsRouter = express.Router();
 patientsRouter.get("/", (_req, res) => {
   res.send(patientsService.getNonSensitiveEntries());
 });
+
 patientsRouter.get("/:id", (req, res) => {
-  
-  const {id} = req.params;
+  const { id } = req.params;
   console.log(id);
   let patient = patientsService.findById(id);
-  // if(patient?.entries === undefined){
-  //   patient?.entries = [];
-  // }
   res.send(patient);
+});
+
+
+patientsRouter.get("/:id/entries", (_req, res) => {
+  res.send('ping poong');
+});
+
+patientsRouter.post("/:id/entries", (req, res) => {
+  // console.log(req.body);
+  // console.log(req.params);
+  
+  patientsService.addEntry(req.params.id, req.body)
+
+  res.send('ping poong');
 });
 
 patientsRouter.post("/", (req, res) => {
   try {
     const newPatient = toNewPatient(req.body);
-    const savedPatient = patientsService.addEntry(newPatient);
+    const savedPatient = patientsService.addNewPatient(newPatient);
     res.json(savedPatient);
   } catch (e) {
     if (e instanceof Error) {
