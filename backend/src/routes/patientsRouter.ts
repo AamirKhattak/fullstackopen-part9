@@ -21,10 +21,15 @@ patientsRouter.get("/:id/entries", (_req, res) => {
 });
 
 patientsRouter.post("/:id/entries", (req, res) => {
-  // console.log(req.body);
-  // console.log(req.params);
+  try {
+    const updatedPatient = patientsService.addEntry(req.params.id, req.body);
+    res.json(updatedPatient);
+  } catch (error) {
+    if(error instanceof Error){
+      res.status(400).send(error.message);
+    }
+  }
   
-  patientsService.addEntry(req.params.id, req.body)
 
   res.send('ping poong');
 });

@@ -1,13 +1,29 @@
+import {
+  NewDiaryEntry,
+  Weather,
+  Visibility,
+  Gender,
+  NewPatient,
+  Entry,
+} from "./types";
 
-import { NewDiaryEntry, Weather, Visibility, Gender, NewPatient } from './types';
+/**
+ * Helper function for exhaustive type checking
+ */
+export const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
 
 const isString = (text: unknown): text is string => {
-  return typeof text === 'string' || text instanceof String;
+  return typeof text === "string" || text instanceof String;
 };
 
 const parseComment = (comment: unknown): string => {
   if (!comment || !isString(comment)) {
-    throw new Error('Incorrect or missing comment');
+    throw new Error("Incorrect or missing comment");
   }
 
   return comment;
@@ -19,7 +35,7 @@ const isDate = (date: string): boolean => {
 
 const parseDate = (date: unknown): string => {
   if (!date || !isString(date) || !isDate(date)) {
-      throw new Error('Incorrect or missing date: ' + date);
+    throw new Error("Incorrect or missing date: " + date);
   }
   return date;
 };
@@ -31,7 +47,7 @@ const isWeather = (param: any): param is Weather => {
 
 const parseWeather = (weather: unknown): Weather => {
   if (!weather || !isWeather(weather)) {
-      throw new Error('Incorrect or missing weather: ' + weather);
+    throw new Error("Incorrect or missing weather: " + weather);
   }
   return weather;
 };
@@ -43,20 +59,29 @@ const isVisibility = (param: any): param is Visibility => {
 
 const parseVisibility = (visibility: unknown): Visibility => {
   if (!visibility || !isVisibility(visibility)) {
-      throw new Error('Incorrect or missing visibility: ' + visibility);
+    throw new Error("Incorrect or missing visibility: " + visibility);
   }
   return visibility;
 };
 
-type Fields = { comment : unknown, date: unknown, weather: unknown, visibility: unknown };
+type Fields = {
+  comment: unknown;
+  date: unknown;
+  weather: unknown;
+  visibility: unknown;
+};
 
-const toNewDiaryEntry = ({ comment, date, weather, visibility } : Fields): NewDiaryEntry => {
-
+const toNewDiaryEntry = ({
+  comment,
+  date,
+  weather,
+  visibility,
+}: Fields): NewDiaryEntry => {
   const newEntry: NewDiaryEntry = {
     comment: parseComment(comment),
     date: parseDate(date),
     weather: parseWeather(weather),
-    visibility: parseVisibility(visibility)
+    visibility: parseVisibility(visibility),
   };
 
   return newEntry;
@@ -67,51 +92,64 @@ export default toNewDiaryEntry;
 //-------------------
 
 const parseName = (name: unknown): string => {
-  if(!name || !isString(name)){
-    throw new Error('Incorrect or missing name');
+  if (!name || !isString(name)) {
+    throw new Error("Incorrect or missing name");
   }
   return name;
-}
+};
 
 const parseSSN = (ssn: unknown): string => {
-  if(!ssn || !isString(ssn)){
-    throw new Error('Incorrect or missing ssn');
+  if (!ssn || !isString(ssn)) {
+    throw new Error("Incorrect or missing ssn");
   }
   return ssn;
-}
+};
 
 const parseOccupation = (occupation: unknown): string => {
-  if(!occupation || !isString(occupation)){
-    throw new Error('Incorrect or missing ssn');
+  if (!occupation || !isString(occupation)) {
+    throw new Error("Incorrect or missing ssn");
   }
   return occupation;
-}
-
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isGender = (param: any): param is Gender => {
   return Object.values(Gender).includes(param);
-}
+};
 
 const parseGender = (gender: unknown): Gender => {
-  if(!gender || !isGender(gender)){
-    throw new Error('Incorrect or missing gender ' + gender);
+  if (!gender || !isGender(gender)) {
+    throw new Error("Incorrect or missing gender " + gender);
   }
   return gender;
-}
+};
 
-type PatientFields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown, entries: any};
+type PatientFields = {
+  name: unknown;
+  dateOfBirth: unknown;
+  ssn: unknown;
+  gender: unknown;
+  occupation: unknown;
+  entries: Entry[];
+};
 
-export const toNewPatient = ( {name, dateOfBirth, ssn, gender, occupation, entries}: PatientFields): NewPatient => { 
+export const toNewPatient = ({
+  name,
+  dateOfBirth,
+  ssn,
+  gender,
+  occupation,
+  entries,
+}: PatientFields): NewPatient => {
   let newEntries = entries ? entries : new Array();
-  
+
   const newPatient: NewPatient = {
     name: parseName(name),
     dateOfBirth: parseDate(dateOfBirth),
     ssn: parseSSN(ssn),
     gender: parseGender(gender),
     occupation: parseOccupation(occupation),
-    entries: newEntries
+    entries: newEntries,
   };
   return newPatient;
-}
+};
