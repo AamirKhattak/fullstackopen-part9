@@ -9,6 +9,7 @@ import MaleIcon from "@mui/icons-material/Male";
 import { updatePatient, useStateValue } from "../state";
 import DiagnosesEntries from "../components/DiagnosesEntries";
 import { setDiagnoses as setDiagnoses_State } from "../state";
+import { Button } from "@mui/material";
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -34,7 +35,7 @@ const PatientDetails = () => {
         console.error(e);
       }
     };
-    
+
     void fetchPatient();
 
     const fetchDiagnoses = async () => {
@@ -61,6 +62,8 @@ const PatientDetails = () => {
     return null;
   }
 
+  const openModal = () => true;
+
   const getGenderIcon = (gender: string) => {
     switch (gender) {
       case "male":
@@ -70,21 +73,30 @@ const PatientDetails = () => {
       default:
         return null;
     }
-  };  
+  };
 
   return (
     <div className="App">
       <Box>
-        <Typography align="center" variant="h6">
-          Patient list
-        </Typography>
-        <Typography variant="h6">
-          {patient.name} {getGenderIcon(patient.gender)}
-        </Typography>
-        <Typography variant="body1">ssn: {patient.ssn}</Typography>
-        <Typography variant="body1">
-          occupation: {patient.occupation}
-        </Typography>
+      <Typography align="center" variant="h6">
+              Patient list
+            </Typography>
+        <Box display={'flex'} sx={{ justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h6">
+              {patient.name} {getGenderIcon(patient.gender)}
+            </Typography>
+            <Typography variant="body1">ssn: {patient.ssn}</Typography>
+            <Typography variant="body1">
+              occupation: {patient.occupation}
+            </Typography>
+          </Box>
+          <Box>
+            <Button variant="contained" color="secondary" onClick={() => openModal()}>
+              Add Diagnoses
+            </Button>
+          </Box>
+        </Box>
         <Typography variant="body1">
           <DiagnosesEntries entries={patient.entries} />
         </Typography>
