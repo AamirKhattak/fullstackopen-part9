@@ -1,7 +1,7 @@
 import { v1 as uuid } from "uuid";
 
 import patientsData from "../../data/patients";
-import { NewPatient, PublicPatient, Patients, Entry } from "../types";
+import { NewPatient, PublicPatient, Patients, EntryWithoutId } from "../types";
 import { assertNever } from "../utils";
 
 const getEntries = (): Patients[] => {
@@ -33,35 +33,46 @@ const findById = (id: string) => {
   return patientsData.find((patient) => patient.id === id);
 };
 
-const addEntry = (patientId: string, entry: Entry) => {
+const addEntry = (patientId: string, entry: EntryWithoutId) => {
+  const id = uuid();
+  const newDiagnosesEntry = {
+    id,
+    ...entry
+  };
 
-//making sure entry.type exists && if exists mendatory fields of an entry are present in data
-  if (!entry.type) {
-    throw new Error('diagnoses entry \"type\" missing.');
+  //making sure entry.type exists && if exists mendatory fields of an entry are present in data
+  if (!newDiagnosesEntry.type) {
+    throw new Error('diagnoses entry "type" missing.');
   } else {
-    switch (entry.type) {
+    switch (newDiagnosesEntry.type) {
       case "HealthCheck": {
-        if(!entry.healthCheckRating)
-        throw new Error('diagnoses entry \"health check rating\" missing.');
+        if (!newDiagnosesEntry.healthCheckRating)
+          throw new Error('diagnoses entry "health check rating" missing.');
         break;
       }
       case "Hospital": {
-        if(!entry.discharge || !entry.discharge.date || !entry.discharge.criteria)
-        throw new Error('diagnoses entry \"discharge info (date/criteria)\" missing .');
+        if (
+          !newDiagnosesEntry.discharge ||
+          !newDiagnosesEntry.discharge.date ||
+          !newDiagnosesEntry.discharge.criteria
+        )
+          throw new Error(
+            'diagnoses entry "discharge info (date/criteria)" missing .'
+          );
         break;
       }
       case "OccupationalHealthcare": {
-        if(!entry.employerName){
-            throw new Error('diagnoses entry \"employer name\" missing.');
+        if (!newDiagnosesEntry.employerName) {
+          throw new Error('diagnoses entry "employer name" missing.');
         }
         break;
       }
       default: {
-        assertNever(entry);
+        assertNever(newDiagnosesEntry);
       }
     }
   }
-  return findById(patientId)?.entries.push(entry);
+  return findById(patientId)?.entries.push(newDiagnosesEntry);
 };
 
 export default {
