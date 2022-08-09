@@ -2,7 +2,7 @@ import { Box, Typography } from "@material-ui/core";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { apiBaseUrlDiagnoses, apiBaseUrlPatients } from "../constants";
+import { apiBaseUrl, apiBaseUrlDiagnoses, apiBaseUrlPatients } from "../constants";
 import { Diagnosis, Patient } from "../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
@@ -10,12 +10,43 @@ import { updatePatient, useStateValue } from "../state";
 import DiagnosesEntries from "../components/DiagnosesEntries";
 import { setDiagnoses as setDiagnoses_State } from "../state";
 import { Button } from "@mui/material";
+import AddDiagnosesEntryModal from "../AddDiagnosesEntryModal";
+import { PatientFormValues } from "../AddDiagnosesEntryModal/AddDiagnosesEntryForm";
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<Patient>();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const submitNewDiagnosesEntry = async (values: PatientFormValues) => {
+    try {
+      const { data: newPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients`,
+        values
+      );
+      dispatch({ type: "ADD_PATIENT", payload: newPatient });
+      closeModal();
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        console.error(e?.response?.data || "Unrecognized axios error");
+        setError(String(e?.response?.data?.error) || "Unrecognized axios error");
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -62,8 +93,6 @@ const PatientDetails = () => {
     return null;
   }
 
-  const openModal = () => true;
-
   const getGenderIcon = (gender: string) => {
     switch (gender) {
       case "male":
@@ -78,10 +107,10 @@ const PatientDetails = () => {
   return (
     <div className="App">
       <Box>
-      <Typography align="center" variant="h6">
-              Patient list
-            </Typography>
-        <Box display={'flex'} sx={{ justifyContent: 'space-between' }}>
+        <Typography align="center" variant="h6">
+          Patient list
+        </Typography>
+        <Box display={"flex"} sx={{ justifyContent: "space-between" }}>
           <Box>
             <Typography variant="h6">
               {patient.name} {getGenderIcon(patient.gender)}
@@ -91,8 +120,18 @@ const PatientDetails = () => {
               occupation: {patient.occupation}
             </Typography>
           </Box>
+          <AddDiagnosesEntryModal
+            modalOpen={modalOpen}
+            onClose={closeModal}
+            error={error}
+            onSubmit={submitNewDiagnosesEntry}
+          />
           <Box>
-            <Button variant="contained" color="secondary" onClick={() => openModal()}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => openModal()}
+            >
               Add Diagnoses
             </Button>
           </Box>
