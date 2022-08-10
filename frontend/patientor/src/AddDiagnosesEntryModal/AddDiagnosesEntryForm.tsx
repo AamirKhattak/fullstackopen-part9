@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Button } from "@material-ui/core";
 import { Field, Formik, Form } from "formik";
 
-import { TextField, SelectField, DiagnosesEntryTypeOption } from "./FormField";
-import { DiagnosesEntryType, Gender, Patient } from "../types";
+import { TextField, SelectField, TypeOption } from "./FormField";
+import {
+  DiagnosesEntryType,
+  Gender,
+  healthCheckRating,
+  Patient,
+} from "../types";
+// import { Hospital } from "../components/DiagnosesEntry";
 
 /*
  * use type Patient, but omit id and entries,
@@ -16,15 +22,89 @@ interface Props {
   onCancel: () => void;
 }
 
-const diagnosesEntryTypeOptions: DiagnosesEntryTypeOption[] = [
-  {value: DiagnosesEntryType.HealthCheckEntry, label: "HealthCheck"},
-  {value: DiagnosesEntryType.HospitalEntry, label: "Hospital"},
-  {value: DiagnosesEntryType.OccupationalHealthcareEntry, label: "OccupationalHealthcare"}
+const ratingOptions: TypeOption[] = [
+  { value: healthCheckRating.Healthy, label: "Healthy" },
+  { value: healthCheckRating.LowRisk, label: "LowRisk" },
+  { value: healthCheckRating.HighRisk, label: "HighRisk" },
+  { value: healthCheckRating.CriticalRisk, label: "CriticalRisk" },
 ];
+
+const diagnosesEntryTypeOptions: TypeOption[] = [
+  { value: DiagnosesEntryType.HealthCheckEntry, label: "HealthCheck" },
+  { value: DiagnosesEntryType.HospitalEntry, label: "Hospital" },
+  {
+    value: DiagnosesEntryType.OccupationalHealthcareEntry,
+    label: "OccupationalHealthcare",
+  },
+];
+
+const getInputFieldsByDiagnosesEntryTypeOption = (
+  diagnosesEntryType: string
+) => {
+  switch (diagnosesEntryType) {
+    case "HealthCheck":
+      return (
+        <SelectField
+          label="Diagnoses Entry Type"
+          name="diagnosesEntryType"
+          options={ratingOptions}
+        />
+      );
+    case "Hospital":
+      return (
+        <>
+          <Field
+            label="Discharge Date"
+            placeholder="YYYY-MM-DD"
+            name="dischargeDate"
+            component={TextField}
+          />
+          <Field
+            label="Criteria"
+            name="dischargeCriteria"
+            component={TextField}
+          />
+        </>
+      );
+    case "OccupationalHealthcare":
+      return (
+        <>
+          <Field
+            label="EmployerName"
+            name="employerName"
+            component={TextField}
+          />
+          <Field
+            label="Sick Leave Start Date"
+            placeholder="YYYY-MM-DD"
+            name="sickLeaveStartDate"
+            component={TextField}
+          />
+          <Field
+            label="Sick Leave End Date"
+            placeholder="YYYY-MM-DD"
+            name="sickLeaveEndDate"
+            component={TextField}
+          />
+        </>
+      );
+
+    default:
+      return null;
+  }
+};
 
 export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
 
-  const onChangeDiagnosesEntryType = (event: Event) => console.log(event?.target,'onChangeDiagnosesEntryType');
+  const [currentDiagnosesEntryType, setCurrentDiagnosesEntryType] = useState('');
+
+  const onChangeDiagnosesEntryType = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    console.log(event?.target, "onChangeDiagnosesEntryType");
+    if(event.target.value !== undefined){
+        console.log(event.target.value);
+        setCurrentDiagnosesEntryType(event.target.value);
+    }
+  };
 
   return (
     <Formik
@@ -33,7 +113,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
         date: "",
         specialist: "",
         diagnosesCode: "",
-        diagnosesEntryType: DiagnosesEntryType.HealthCheckEntry,
+        // diagnosesEntryType: DiagnosesEntryType.OccupationalHealthcareEntry,
         name: "",
         ssn: "",
         dateOfBirth: "",
@@ -86,8 +166,15 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
               name="diagnosesCode"
               component={TextField}
             />
-            <SelectField label="Diagnoses Entry Type" name="diagnosesEntryType" options={diagnosesEntryTypeOptions} onChangeOption={onChangeDiagnosesEntryType}/>
-            
+            <SelectField
+              label="Diagnoses Entry Type"
+              name="diagnosesEntryType"
+              options={diagnosesEntryTypeOptions}
+              onChangeOption={onChangeDiagnosesEntryType}
+            />
+            {getInputFieldsByDiagnosesEntryTypeOption(
+              currentDiagnosesEntryType
+            )}
             <Grid>
               <Grid item>
                 <Button
