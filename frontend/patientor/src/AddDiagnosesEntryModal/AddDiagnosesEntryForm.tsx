@@ -5,9 +5,8 @@ import { Field, Formik, Form } from "formik";
 import { TextField, SelectField, TypeOption, DiagnosisSelection } from "./FormField";
 import {
   DiagnosesEntryType,
-  Gender,
+  Entry,
   healthCheckRating,
-  Patient,
 } from "../types";
 import { useStateValue } from "../state";
 // import { Hospital } from "../components/DiagnosesEntry";
@@ -16,10 +15,14 @@ import { useStateValue } from "../state";
  * use type Patient, but omit id and entries,
  * because those are irrelevant for new patient object.
  */
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+
+//TODO: https://github.com/PCianes/FullStackOpen/blob/master/part9/patientor/client/src/AddPatientModal/AddPatientForm.tsx
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// Define Entry without the 'id' property
+export type DiagnosesEntryFormValues = UnionOmit<Entry, 'id'>;
 
 interface Props {
-  onSubmit: (values: PatientFormValues) => void;
+  onSubmit: (values: DiagnosesEntryFormValues) => void;
   onCancel: () => void;
 }
 
@@ -103,9 +106,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
   const onChangeDiagnosesEntryType = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log(event?.target, "onChangeDiagnosesEntryType");
     if (event.target.value !== undefined) {
-      console.log(event.target.value);
       setCurrentDiagnosesEntryType(event.target.value);
     }
   };
@@ -113,33 +114,28 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
   return (
     <Formik
       initialValues={{
-        descrition: "",
+        description: "",
         date: "",
         specialist: "",
-        name: "",
-        ssn: "",
-        dateOfBirth: "",
-        occupation: "",
-        gender: Gender.Other,
       }}
       onSubmit={onSubmit}
-      validate={(values) => {
-        const requiredError = "Field is required";
-        const errors: { [field: string]: string } = {};
-        if (!values.name) {
-          errors.name = requiredError;
-        }
-        if (!values.ssn) {
-          errors.ssn = requiredError;
-        }
-        if (!values.dateOfBirth) {
-          errors.dateOfBirth = requiredError;
-        }
-        if (!values.occupation) {
-          errors.occupation = requiredError;
-        }
-        return errors;
-      }}
+      // validate={(values) => {
+      //   const requiredError = "Field is required";
+      //   const errors: { [field: string]: string } = {};
+      //   if (!values.name) {
+      //     errors.name = requiredError;
+      //   }
+      //   if (!values.ssn) {
+      //     errors.ssn = requiredError;
+      //   }
+      //   if (!values.dateOfBirth) {
+      //     errors.dateOfBirth = requiredError;
+      //   }
+      //   if (!values.occupation) {
+      //     errors.occupation = requiredError;
+      //   }
+      //   return errors;
+      // }}
     >
       {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
         return (
@@ -195,7 +191,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
                   }}
                   type="submit"
                   variant="contained"
-                  disabled={!dirty || !isValid}
+                  // disabled={!dirty || !isValid}
                 >
                   Add
                 </Button>

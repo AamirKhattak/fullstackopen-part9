@@ -2,7 +2,7 @@ import { Box, Typography } from "@material-ui/core";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { apiBaseUrl, apiBaseUrlDiagnoses, apiBaseUrlPatients } from "../constants";
+import { apiBaseUrlDiagnoses, apiBaseUrlPatients } from "../constants";
 import { Diagnosis, Patient } from "../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
@@ -11,7 +11,7 @@ import DiagnosesEntries from "../components/DiagnosesEntries";
 import { setDiagnoses as setDiagnoses_State } from "../state";
 import { Button } from "@mui/material";
 import AddDiagnosesEntryModal from "../AddDiagnosesEntryModal";
-import { PatientFormValues } from "../AddDiagnosesEntryModal/AddDiagnosesEntryForm";
+import { DiagnosesEntryFormValues } from "../AddDiagnosesEntryModal/AddDiagnosesEntryForm";
 
 const PatientDetails = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -29,23 +29,26 @@ const PatientDetails = () => {
     setError(undefined);
   };
 
-  const submitNewDiagnosesEntry = async (values: PatientFormValues) => {
-    try {
-      const { data: newPatient } = await axios.post<Patient>(
-        `${apiBaseUrl}/patients`,
-        values
-      );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
-      closeModal();
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        console.error(e?.response?.data || "Unrecognized axios error");
-        setError(String(e?.response?.data?.error) || "Unrecognized axios error");
-      } else {
-        console.error("Unknown error", e);
-        setError("Unknown error");
-      }
-    }
+  // const submitNewDiagnosesEntry = async (values: PatientFormValues) => {
+  const submitNewDiagnosesEntry = (values: DiagnosesEntryFormValues) => {
+    console.log(values);
+    
+    // try {
+    //   const { data: newPatient } = await axios.post<Patient>(
+    //     `${apiBaseUrl}/patients`,
+    //     values
+    //   );
+    //   dispatch({ type: "ADD_PATIENT", payload: newPatient });
+    //   closeModal();
+    // } catch (e: unknown) {
+    //   if (axios.isAxiosError(e)) {
+    //     console.error(e?.response?.data || "Unrecognized axios error");
+    //     setError(String(e?.response?.data?.error) || "Unrecognized axios error");
+    //   } else {
+    //     console.error("Unknown error", e);
+    //     setError("Unknown error");
+    //   }
+    // }
   };
 
   useEffect(() => {
