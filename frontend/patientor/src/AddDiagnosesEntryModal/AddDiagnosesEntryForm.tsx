@@ -4,8 +4,8 @@ import { Field, Formik, Form } from "formik";
 
 import { TextField, SelectField, TypeOption, DiagnosisSelection } from "./FormField";
 import {
+  BaseEntry,
   DiagnosesEntryType,
-  Entry,
   healthCheckRating,
 } from "../types";
 import { useStateValue } from "../state";
@@ -17,9 +17,9 @@ import { useStateValue } from "../state";
  */
 
 //TODO: https://github.com/PCianes/FullStackOpen/blob/master/part9/patientor/client/src/AddPatientModal/AddPatientForm.tsx
-type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 // Define Entry without the 'id' property
-export type DiagnosesEntryFormValues = UnionOmit<Entry, 'id'>;
+export type DiagnosesEntryFormValues = Omit<BaseEntry, 'id'>;
 
 interface Props {
   onSubmit: (values: DiagnosesEntryFormValues) => void;
@@ -191,7 +191,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
                   }}
                   type="submit"
                   variant="contained"
-                  // disabled={!dirty || !isValid}
+                  disabled={!dirty || !isValid}
                 >
                   Add
                 </Button>
