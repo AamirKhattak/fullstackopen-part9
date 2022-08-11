@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Grid, Button } from "@material-ui/core";
 import { Field, Formik, Form } from "formik";
 
-import { TextField, SelectField, TypeOption } from "./FormField";
+import { TextField, SelectField, TypeOption, DiagnosisSelection } from "./FormField";
 import {
   DiagnosesEntryType,
   Gender,
   healthCheckRating,
   Patient,
 } from "../types";
+import { useStateValue } from "../state";
 // import { Hospital } from "../components/DiagnosesEntry";
 
 /*
@@ -95,14 +96,17 @@ const getInputFieldsByDiagnosesEntryTypeOption = (
 };
 
 export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
+  const [currentDiagnosesEntryType, setCurrentDiagnosesEntryType] =
+    useState("");
+  const [{ diagnoses }] = useStateValue();
 
-  const [currentDiagnosesEntryType, setCurrentDiagnosesEntryType] = useState('');
-
-  const onChangeDiagnosesEntryType = (event: React.ChangeEvent<HTMLInputElement>) =>{
+  const onChangeDiagnosesEntryType = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     console.log(event?.target, "onChangeDiagnosesEntryType");
-    if(event.target.value !== undefined){
-        console.log(event.target.value);
-        setCurrentDiagnosesEntryType(event.target.value);
+    if (event.target.value !== undefined) {
+      console.log(event.target.value);
+      setCurrentDiagnosesEntryType(event.target.value);
     }
   };
 
@@ -112,8 +116,6 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
         descrition: "",
         date: "",
         specialist: "",
-        diagnosesCode: "",
-        // diagnosesEntryType: DiagnosesEntryType.OccupationalHealthcareEntry,
         name: "",
         ssn: "",
         dateOfBirth: "",
@@ -139,7 +141,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
         return errors;
       }}
     >
-      {({ isValid, dirty }) => {
+      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
         return (
           <Form className="form ui">
             <Field
@@ -160,11 +162,10 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
               name="specialist"
               component={TextField}
             />
-            <Field
-              label="DiagnosesCode-TODO"
-              placeholder="diagnosesCode TODO TODO"
-              name="diagnosesCode"
-              component={TextField}
+            <DiagnosisSelection
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              diagnoses={Object.values(diagnoses)}
             />
             <SelectField
               label="Diagnoses Entry Type"
