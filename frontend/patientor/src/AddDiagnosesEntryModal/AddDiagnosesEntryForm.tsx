@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid, Button } from "@material-ui/core";
 import { Field, Formik, Form } from "formik";
 
-import { TextField, SelectField, TypeOption, DiagnosisSelection } from "./FormField";
 import {
-  BaseEntry,
-  DiagnosesEntryType,
-  healthCheckRating,
-} from "../types";
+  TextField,
+  SelectField,
+  TypeOption,
+  DiagnosisSelection,
+} from "./FormField";
+import { BaseEntry, DiagnosesEntryType, healthCheckRating } from "../types";
 import { useStateValue } from "../state";
 // import { Hospital } from "../components/DiagnosesEntry";
 
@@ -19,7 +20,15 @@ import { useStateValue } from "../state";
 //TODO: https://github.com/PCianes/FullStackOpen/blob/master/part9/patientor/client/src/AddPatientModal/AddPatientForm.tsx
 // type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 // Define Entry without the 'id' property
-export type DiagnosesEntryFormValues = Omit<BaseEntry, 'id'>;
+export interface DiagnosesEntryFormValues extends Omit<BaseEntry, "id"> {
+  type: string;
+  healthCheckRating?: healthCheckRating;
+  dischargeDate?: string;
+  dischargeCriteria?: string;
+  employerName?: string;
+  sickLeaveStartDate?: string;
+  sickLeaveEndDate?: string;
+}
 
 interface Props {
   onSubmit: (values: DiagnosesEntryFormValues) => void;
@@ -49,8 +58,8 @@ const getInputFieldsByDiagnosesEntryTypeOption = (
     case "HealthCheck":
       return (
         <SelectField
-          label="Diagnoses Entry Type"
-          name="diagnosesEntryType"
+          label="HealthCheck Rating"
+          name="healthCheckRating"
           options={ratingOptions}
         />
       );
@@ -99,24 +108,21 @@ const getInputFieldsByDiagnosesEntryTypeOption = (
 };
 
 export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
-  const [currentDiagnosesEntryType, setCurrentDiagnosesEntryType] =
-    useState("");
   const [{ diagnoses }] = useStateValue();
-
-  const onChangeDiagnosesEntryType = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target.value !== undefined) {
-      setCurrentDiagnosesEntryType(event.target.value);
-    }
-  };
-
   return (
     <Formik
       initialValues={{
-        description: "",
-        date: "",
-        specialist: "",
+        description: `Desciption test ${(new Date()).toString()}`,
+        date: new Date().toISOString().split('T')[0],
+        specialist: "Dr. John Doe",
+        type: "HealthCheck",
+        healthCheckRating: healthCheckRating.LowRisk,
+        diagnosisCodes: ['J06.9', 'Z57.1'],
+        dischargeCriteria: "Too fat to be placed in hospital",
+        dischargeDate: new Date().toISOString().split('T')[0],
+        employerName: "Papa Princess/Prince",
+        sickLeaveEndDate: new Date().toISOString().split('T')[0],
+        sickLeaveStartDate: new Date().toISOString().split('T')[0]
       }}
       onSubmit={onSubmit}
       // validate={(values) => {
@@ -137,7 +143,7 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
       //   return errors;
       // }}
     >
-      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+      {({ isValid, dirty, values, setFieldValue, setFieldTouched }) => {
         return (
           <Form className="form ui">
             <Field
@@ -165,13 +171,11 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
             />
             <SelectField
               label="Diagnoses Entry Type"
-              name="diagnosesEntryType"
+              name="type"
               options={diagnosesEntryTypeOptions}
-              onChangeOption={onChangeDiagnosesEntryType}
+              // onChangeOption={onChangeDiagnosesEntryType}
             />
-            {getInputFieldsByDiagnosesEntryTypeOption(
-              currentDiagnosesEntryType
-            )}
+            {getInputFieldsByDiagnosesEntryTypeOption(values.type)}
             <Grid>
               <Grid item>
                 <Button

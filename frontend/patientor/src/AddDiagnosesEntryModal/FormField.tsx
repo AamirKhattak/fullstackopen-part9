@@ -26,13 +26,12 @@ export type TypeOption = {
 type SelectFieldProps = {
   name: string;
   label: string;
-  onChangeOption?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   options: TypeOption[];
 };
 
 const FormikSelect = ({ field, ...props }: FieldProps) => <Select {...field} {...props} />;
 
-export const SelectField = ({ name, label, onChangeOption, options }: SelectFieldProps) => (
+export const SelectField = ({ name, label, options }: SelectFieldProps) => (
   <>
     <InputLabel>{label}</InputLabel>
     <Field
@@ -41,7 +40,6 @@ export const SelectField = ({ name, label, onChangeOption, options }: SelectFiel
       label={label}
       component={FormikSelect}
       name={name}
-      onChange={onChangeOption}
     >
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>

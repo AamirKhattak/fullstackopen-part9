@@ -21,6 +21,7 @@ patientsRouter.get("/:id/entries", (_req, res) => {
 });
 
 patientsRouter.post("/:id/entries", (req, res) => {
+  console.log(req.params.id, req.body);
   try {
     const updatedPatient = patientsService.addEntry(req.params.id, req.body);
     res.json(updatedPatient);
@@ -29,9 +30,6 @@ patientsRouter.post("/:id/entries", (req, res) => {
       res.status(400).send(error.message);
     }
   }
-  
-
-  res.send('ping poong');
 });
 
 patientsRouter.post("/", (req, res) => {

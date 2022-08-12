@@ -72,7 +72,10 @@ const addEntry = (patientId: string, entry: EntryWithoutId) => {
       }
     }
   }
-  return findById(patientId)?.entries.push(newDiagnosesEntry);
+  //save new diagnoses entry to patient
+  findById(patientId)?.entries.push(newDiagnosesEntry);
+  
+  return newDiagnosesEntry;
 };
 
 export default {

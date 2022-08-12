@@ -59,9 +59,7 @@ export function OccupationalHealthcare({ entry }: { entry: OccupationalHealthcar
   );
 }
 
-export default function DiagnosesEntry({ entry }: { entry: Entry }) {
-    console.log(entry);
-    
+export default function DiagnosesEntry({ entry }: { entry: Entry }) {   
   switch (entry.type) {
     case "HealthCheck":
       return <HealthCheck entry={entry} />;
