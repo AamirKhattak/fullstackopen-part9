@@ -51,6 +51,12 @@ const diagnosesEntryTypeOptions: TypeOption[] = [
   },
 ];
 
+const isValidDate = (dateString: string): boolean => {
+  const regEx = /^\d{4}-\d{2}-\d{2}$/;
+  // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+  return dateString.match(regEx) != null;
+};
+
 const getInputFieldsByDiagnosesEntryTypeOption = (
   diagnosesEntryType: string
 ) => {
@@ -125,23 +131,70 @@ export const AddDiagnosesEntryForm = ({ onSubmit, onCancel }: Props) => {
         sickLeaveStartDate: new Date().toISOString().split('T')[0]
       }}
       onSubmit={onSubmit}
-      // validate={(values) => {
-      //   const requiredError = "Field is required";
-      //   const errors: { [field: string]: string } = {};
-      //   if (!values.name) {
-      //     errors.name = requiredError;
-      //   }
-      //   if (!values.ssn) {
-      //     errors.ssn = requiredError;
-      //   }
-      //   if (!values.dateOfBirth) {
-      //     errors.dateOfBirth = requiredError;
-      //   }
-      //   if (!values.occupation) {
-      //     errors.occupation = requiredError;
-      //   }
-      //   return errors;
-      // }}
+      validate={(values) => {
+        const requiredError = "Field is required";
+        const errors: { [field: string]: string } = {};
+        if (!values.description) {
+          errors.description = requiredError;
+        }
+        if (!values.date) {
+          errors.date = requiredError;
+        }
+        if (!isValidDate(values.date)) {
+          errors.date = 'Date format: YYYY-MM-DD';
+        }
+        if (!values.specialist) {
+          errors.specialist = requiredError;
+        }
+        if (!values.diagnosisCodes) {
+          errors.diagnosisCodes = requiredError;
+        }
+        if (!values.type) {
+          errors.type = requiredError;
+        }
+
+        if(values.type === "HealthCheck"){
+          if(!values.healthCheckRating){
+            errors.healthCheckRating = requiredError;
+          }
+        }
+        if(values.type === "HealthCheck"){
+          if(!values.healthCheckRating){
+            errors.healthCheckRating = requiredError;
+          }
+        }
+
+        if (values.type === 'Hospital') {
+          if (!values.dischargeCriteria) {
+            errors.dischargeCriteria = requiredError;
+          }
+          if (!values.dischargeDate) {
+            errors.dischargeDate = requiredError;
+          }
+          if (values.dischargeDate && !isValidDate(values.dischargeDate)) {
+            errors.dischargeDate = 'Date format: YYYY-MM-DD';
+          }
+        }
+        if (values.type === 'OccupationalHealthcare') {
+          if (!values.employerName) {
+            errors.employerName = requiredError;
+          }
+          if (
+            values.sickLeaveStartDate &&
+            !isValidDate(values.sickLeaveStartDate)
+          ) {
+            errors.sickLeaveStartDate = 'Date format: YYYY-MM-DD';
+          }
+          if (
+            values.sickLeaveEndDate &&
+            !isValidDate(values.sickLeaveEndDate)
+          ) {
+            errors.sickLeaveEndDate = 'Date format: YYYY-MM-DD';
+          }
+        }
+
+        return errors;
+      }}
     >
       {({ isValid, dirty, values, setFieldValue, setFieldTouched }) => {
         return (
