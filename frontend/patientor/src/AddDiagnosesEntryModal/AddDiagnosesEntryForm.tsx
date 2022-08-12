@@ -17,7 +17,7 @@ import { useStateValue } from "../state";
  * because those are irrelevant for new patient object.
  */
 
-//TODO: https://github.com/PCianes/FullStackOpen/blob/master/part9/patientor/client/src/AddPatientModal/AddPatientForm.tsx
+
 // type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 // Define Entry without the 'id' property
 export interface DiagnosesEntryFormValues extends Omit<BaseEntry, "id"> {
